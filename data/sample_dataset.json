@@ -1,0 +1,515 @@
+[
+  {
+    "id": "d1",
+    "type": "domain",
+    "value": "example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["root", "prod"],
+    "metadata": {}
+  },
+  {
+    "id": "d2",
+    "type": "domain",
+    "value": "staging.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["staging"],
+    "metadata": {}
+  },
+  {
+    "id": "d3",
+    "type": "domain",
+    "value": "legacy.example.com",
+    "status": "stale",
+    "source": "import",
+    "tags": ["legacy"],
+    "metadata": {}
+  },
+  {
+    "id": "sub1",
+    "type": "subdomain",
+    "value": "api.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "api"],
+    "metadata": {},
+    "parent": "d1"
+  },
+  {
+    "id": "sub2",
+    "type": "subdomain",
+    "value": "www.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "web"],
+    "metadata": {},
+    "parent": "d1"
+  },
+  {
+    "id": "sub3",
+    "type": "subdomain",
+    "value": "admin.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "admin"],
+    "metadata": {},
+    "parent": "d1"
+  },
+  {
+    "id": "sub4",
+    "type": "subdomain",
+    "value": "dev.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["dev"],
+    "metadata": {},
+    "parent": "d1"
+  },
+  {
+    "id": "sub5",
+    "type": "subdomain",
+    "value": "stage.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["staging"],
+    "metadata": {},
+    "parent": "d2"
+  },
+  {
+    "id": "sub6",
+    "type": "subdomain",
+    "value": "mail.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "mail"],
+    "metadata": {},
+    "parent": "d1"
+  },
+  {
+    "id": "sub7",
+    "type": "subdomain",
+    "value": "vpn.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "vpn"],
+    "metadata": {},
+    "parent": "d1"
+  },
+  {
+    "id": "sub8",
+    "type": "subdomain",
+    "value": "db.example.com",
+    "status": "stale",
+    "source": "import",
+    "tags": ["prod", "database"],
+    "metadata": {},
+    "parent": "d1"
+  },
+  {
+    "id": "ip1",
+    "type": "ip_address",
+    "value": "203.0.113.10",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"asn": "AS12345", "country": "US"},
+    "resolves_to": "sub1"
+  },
+  {
+    "id": "ip2",
+    "type": "ip_address",
+    "value": "203.0.113.11",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"asn": "AS12345", "country": "US"},
+    "resolves_to": "sub2"
+  },
+  {
+    "id": "ip3",
+    "type": "ip_address",
+    "value": "203.0.113.12",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"asn": "AS12345", "country": "US"},
+    "resolves_to": "sub3"
+  },
+  {
+    "id": "ip4",
+    "type": "ip_address",
+    "value": "10.0.0.5",
+    "status": "active",
+    "source": "import",
+    "tags": ["dev", "internal"],
+    "metadata": {"asn": null, "country": null, "note": "internal dev server"},
+    "resolves_to": "sub4"
+  },
+  {
+    "id": "ip5",
+    "type": "ip_address",
+    "value": "198.51.100.22",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"asn": "AS67890", "country": "DE"},
+    "resolves_to": "sub6"
+  },
+  {
+    "id": "svc1",
+    "type": "service",
+    "value": "443/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "https"],
+    "metadata": {"banner": "nginx/1.24.0", "protocol": "HTTPS"},
+    "hosted_on": "ip1"
+  },
+  {
+    "id": "svc2",
+    "type": "service",
+    "value": "80/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "http"],
+    "metadata": {"banner": "nginx/1.24.0", "protocol": "HTTP"},
+    "hosted_on": "ip2"
+  },
+  {
+    "id": "svc3",
+    "type": "service",
+    "value": "22/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "ssh"],
+    "metadata": {"banner": "OpenSSH_8.9p1", "protocol": "SSH"},
+    "hosted_on": "ip3"
+  },
+  {
+    "id": "svc4",
+    "type": "service",
+    "value": "3389/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "rdp"],
+    "metadata": {"banner": "Windows RDP", "protocol": "RDP"},
+    "hosted_on": "ip3"
+  },
+  {
+    "id": "svc5",
+    "type": "service",
+    "value": "21/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "ftp"],
+    "metadata": {"banner": "vsftpd 3.0.3", "protocol": "FTP"},
+    "hosted_on": "ip2"
+  },
+  {
+    "id": "svc6",
+    "type": "service",
+    "value": "25/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "smtp"],
+    "metadata": {"banner": "Postfix ESMTP", "protocol": "SMTP"},
+    "hosted_on": "ip5"
+  },
+  {
+    "id": "svc7",
+    "type": "service",
+    "value": "8443/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["staging", "https"],
+    "metadata": {"banner": "Apache/2.4.57", "protocol": "HTTPS"},
+    "hosted_on": "ip4"
+  },
+  {
+    "id": "svc8",
+    "type": "service",
+    "value": "5432/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "database"],
+    "metadata": {"banner": "PostgreSQL 14.5", "protocol": "PostgreSQL"},
+    "hosted_on": "ip4"
+  },
+  {
+    "id": "cert1",
+    "type": "certificate",
+    "value": "CN=api.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {
+      "issuer": "Let's Encrypt",
+      "subject": "api.example.com",
+      "expires": "2025-01-02T00:00:00Z",
+      "not_before": "2024-10-04T00:00:00Z",
+      "serial": "03:a1:b2:c3:d4:e5:f6",
+      "san": ["api.example.com"]
+    },
+    "covers": "sub1"
+  },
+  {
+    "id": "cert2",
+    "type": "certificate",
+    "value": "CN=www.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {
+      "issuer": "DigiCert",
+      "subject": "www.example.com",
+      "expires": "2024-06-15T00:00:00Z",
+      "not_before": "2023-06-15T00:00:00Z",
+      "serial": "04:b2:c3:d4:e5:f6:a7",
+      "san": ["www.example.com", "example.com"]
+    },
+    "covers": "sub2"
+  },
+  {
+    "id": "cert3",
+    "type": "certificate",
+    "value": "CN=admin.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "admin"],
+    "metadata": {
+      "issuer": "Let's Encrypt",
+      "subject": "admin.example.com",
+      "expires": "2026-09-01T00:00:00Z",
+      "not_before": "2026-06-01T00:00:00Z",
+      "serial": "05:c3:d4:e5:f6:a7:b8",
+      "san": ["admin.example.com"]
+    },
+    "covers": "sub3"
+  },
+  {
+    "id": "cert4",
+    "type": "certificate",
+    "value": "CN=*.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "wildcard"],
+    "metadata": {
+      "issuer": "Sectigo",
+      "subject": "*.example.com",
+      "expires": "2026-07-10T00:00:00Z",
+      "not_before": "2025-07-10T00:00:00Z",
+      "serial": "06:d4:e5:f6:a7:b8:c9",
+      "san": ["*.example.com", "example.com"]
+    },
+    "covers": "d1"
+  },
+  {
+    "id": "cert5",
+    "type": "certificate",
+    "value": "CN=mail.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "mail"],
+    "metadata": {
+      "issuer": "Let's Encrypt",
+      "subject": "mail.example.com",
+      "expires": "2023-12-01T00:00:00Z",
+      "not_before": "2023-09-01T00:00:00Z",
+      "serial": "07:e5:f6:a7:b8:c9:da",
+      "san": ["mail.example.com"]
+    },
+    "covers": "sub6"
+  },
+  {
+    "id": "tech1",
+    "type": "technology",
+    "value": "nginx",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "web-server"],
+    "metadata": {"version": "1.24.0", "category": "web-server"},
+    "runs_on": "sub1"
+  },
+  {
+    "id": "tech2",
+    "type": "technology",
+    "value": "React",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "frontend"],
+    "metadata": {"version": "17.0.2", "category": "frontend-framework"},
+    "runs_on": "sub2"
+  },
+  {
+    "id": "tech3",
+    "type": "technology",
+    "value": "WordPress",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"version": "5.8.0", "category": "cms"},
+    "runs_on": "sub2"
+  },
+  {
+    "id": "tech4",
+    "type": "technology",
+    "value": "PostgreSQL",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "database"],
+    "metadata": {"version": "14.5", "category": "database"},
+    "runs_on": "sub8"
+  },
+  {
+    "id": "tech5",
+    "type": "technology",
+    "value": "OpenSSL",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"version": "1.0.1", "category": "cryptography", "note": "EOL version — critical vulnerability CVE-2014-0160"},
+    "runs_on": "sub3"
+  },
+  {
+    "id": "tech6",
+    "type": "technology",
+    "value": "Apache HTTP Server",
+    "status": "active",
+    "source": "scan",
+    "tags": ["staging"],
+    "metadata": {"version": "2.4.57", "category": "web-server"},
+    "runs_on": "sub5"
+  },
+  {
+    "id": "tech7",
+    "type": "technology",
+    "value": "jQuery",
+    "status": "stale",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"version": "1.12.4", "category": "javascript-library", "note": "EOL version"},
+    "runs_on": "sub2"
+  },
+  {
+    "id": "tech8",
+    "type": "technology",
+    "value": "PHP",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"version": "7.4.33", "category": "language-runtime", "note": "EOL since 2022-11-28"},
+    "runs_on": "sub3"
+  },
+  {
+    "id": "tech9",
+    "type": "technology",
+    "value": "Postfix",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "mail"],
+    "metadata": {"version": "3.6.4", "category": "mail-server"},
+    "runs_on": "sub6"
+  },
+  {
+    "id": "tech10",
+    "type": "technology",
+    "value": "OpenVPN",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "vpn"],
+    "metadata": {"version": "2.5.9", "category": "vpn-server"},
+    "runs_on": "sub7"
+  },
+  {
+    "id": "reimport_test",
+    "type": "domain",
+    "value": "example.com",
+    "status": "active",
+    "source": "import",
+    "tags": ["reimport-test"],
+    "metadata": {"extra_key": "from_second_import"}
+  },
+  {
+    "id": "stale_reappear",
+    "type": "subdomain",
+    "value": "forgotten.example.com",
+    "status": "stale",
+    "source": "import",
+    "tags": ["old"],
+    "metadata": {}
+  },
+  {
+    "id": "stale_reappear",
+    "type": "subdomain",
+    "value": "forgotten.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["rediscovered"],
+    "metadata": {"rediscovered": true}
+  },
+  {
+    "type": "certificate",
+    "value": "CN=noexpiry.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": [],
+    "metadata": {
+      "issuer": "Unknown CA",
+      "subject": "noexpiry.example.com"
+    }
+  },
+  {
+    "id": "malformed1",
+    "type": "invalid_type_xyz",
+    "value": "bad.example.com",
+    "source": "scan",
+    "tags": [],
+    "metadata": {}
+  },
+  {
+    "id": "malformed2"
+  },
+  "not_an_object_at_all",
+  {
+    "id": "partial1",
+    "value": "192.168.1.1",
+    "source": "manual",
+    "tags": ["internal"]
+  },
+  {
+    "id": "extra1",
+    "type": "ip_address",
+    "value": "198.51.100.50",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"asn": "AS99999", "country": "FR"}
+  },
+  {
+    "id": "extra2",
+    "type": "service",
+    "value": "23/tcp",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod"],
+    "metadata": {"banner": "Linux telnetd", "protocol": "Telnet", "note": "Cleartext protocol — high risk"},
+    "hosted_on": "extra1"
+  },
+  {
+    "id": "extra3",
+    "type": "certificate",
+    "value": "CN=vpn.example.com",
+    "status": "active",
+    "source": "scan",
+    "tags": ["prod", "vpn"],
+    "metadata": {
+      "issuer": "Let's Encrypt",
+      "subject": "vpn.example.com",
+      "expires": "2026-07-21T00:00:00Z",
+      "not_before": "2026-04-21T00:00:00Z",
+      "serial": "08:f6:a7:b8:c9:da:eb"
+    },
+    "covers": "sub7"
+  }
+]
