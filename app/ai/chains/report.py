@@ -23,7 +23,7 @@ def run_report(db: Session, req: ReportRequest) -> ReportResponse:
         return cached
 
     params = AssetListParams(
-        type=req.type, status=req.status, tag=req.tag, page=1, page_size=100
+        type=req.type, status=req.status, tag=req.tag, page=1, page_size=500
     )
     assets = list_assets(db, params).items
 

@@ -25,10 +25,12 @@ def run_nl_query(db: Session, question: str) -> NLQueryResponse:
     chain = nl_query_prompt | llm.with_structured_output(FilterParams)
 
     today = datetime.now(timezone.utc).date().isoformat()
+    filter_extraction_failed = False
     try:
         filter_params: FilterParams = chain.invoke({"question": question, "today": today})
-    except Exception as exc:
+    except Exception:
         filter_params = FilterParams()
+        filter_extraction_failed = True
 
     # Translate FilterParams → AssetListParams for the DB query
     params = AssetListParams(
@@ -57,10 +59,17 @@ def run_nl_query(db: Session, question: str) -> NLQueryResponse:
             if _parse_expiry(a.metadata_) and _parse_expiry(a.metadata_) > cutoff
         ]
 
-    summary = (
-        f"Found {len(assets)} asset(s) matching your query "
-        f"with filters: {filter_params.model_dump(exclude_none=True)}"
-    )
+    active_filters = filter_params.model_dump(exclude_none=True)
+    if filter_extraction_failed or not active_filters:
+        summary = (
+            f"Could not extract specific filters from your query — showing all {len(assets)} asset(s). "
+            "Try rephrasing with explicit terms like 'active domains' or 'prod certificates'."
+        )
+    else:
+        summary = (
+            f"Found {len(assets)} asset(s) matching your query "
+            f"with filters: {active_filters}"
+        )
 
     result = NLQueryResponse(
         question=question,
