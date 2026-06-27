@@ -1,11 +1,17 @@
 """Output evaluation harness (bonus).
 
 Two independent checks:
-1. Grounding check — every asset ID/value mentioned in the output must exist in the DB.
+1. Grounding check — every asset ID referenced in the output must exist in the DB.
 2. Completeness check — LLM-as-judge scores whether the output actually answers the input.
+
+Grounding coverage by chain type:
+  nl_query    → assets[].id
+  risk        → findings[].asset_id
+  enrichment  → asset_id (top-level)
+  report      → no IDs in prose; grounding returns 1.0 (completeness judge handles quality)
+  agent       → no structured IDs in prose answer; grounding returns 1.0
 """
 import json
-import re
 from typing import Any
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -14,8 +20,7 @@ from sqlalchemy.orm import Session
 
 from app.ai.llm import get_llm
 from app.schemas.analysis import EvaluationRequest, EvaluationResponse
-from app.services.asset_service import get_asset, list_assets
-from app.schemas.asset import AssetListParams
+from app.services.asset_service import get_asset
 
 
 # ── Completeness judge ────────────────────────────────────────────────────────
@@ -42,47 +47,36 @@ _JUDGE_PROMPT = ChatPromptTemplate.from_messages([
 
 # ── Grounding check ───────────────────────────────────────────────────────────
 
-def _extract_candidate_ids(data: Any) -> set[str]:
-    """Extract all string values from a nested dict/list that could be asset IDs or values."""
-    candidates: set[str] = set()
-    _walk(data, candidates)
-    return candidates
-
-
-def _walk(node: Any, acc: set[str]) -> None:
-    if isinstance(node, str):
-        acc.add(node)
-    elif isinstance(node, dict):
-        for v in node.values():
-            _walk(v, acc)
-    elif isinstance(node, list):
-        for item in node:
-            _walk(item, acc)
-
-
 def _grounding_check(db: Session, output: dict[str, Any]) -> tuple[float, list[str]]:
-    """Return (score 0-1, list of hallucinated references)."""
+    """Return (score 0-1, list of hallucinated asset IDs).
+
+    Extracts asset IDs from all structured output schemas and verifies each
+    exists in the database. Chain types whose outputs contain no structured IDs
+    (report, agent) always return 1.0 — quality is assessed by the completeness judge.
+    """
     candidate_ids: list[str] = []
 
-    findings = output.get("findings", [])
-    for f in findings:
+    # risk scoring: findings[].asset_id
+    for f in output.get("findings", []):
         if isinstance(f, dict) and "asset_id" in f:
             candidate_ids.append(f["asset_id"])
 
-    asset_list = output.get("assets", [])
-    for a in asset_list:
+    # nl_query: assets[].id
+    for a in output.get("assets", []):
         if isinstance(a, dict) and "id" in a:
             candidate_ids.append(a["id"])
 
+    # enrichment: top-level asset_id
+    top_level_id = output.get("asset_id")
+    if isinstance(top_level_id, str) and top_level_id:
+        candidate_ids.append(top_level_id)
+
     if not candidate_ids:
+        # report / agent outputs contain prose, not structured IDs — not groundable here
         return 1.0, []
 
-    hallucinated = []
-    for aid in candidate_ids:
-        if not get_asset(db, aid):
-            hallucinated.append(aid)
-
-    score = 1.0 - (len(hallucinated) / len(candidate_ids)) if candidate_ids else 1.0
+    hallucinated = [aid for aid in candidate_ids if not get_asset(db, aid)]
+    score = 1.0 - (len(hallucinated) / len(candidate_ids))
     return round(score, 3), hallucinated
 
 

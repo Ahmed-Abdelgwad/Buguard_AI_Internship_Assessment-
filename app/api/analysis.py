@@ -4,6 +4,7 @@ and the unified /ask endpoint that auto-routes and auto-evaluates every response
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.api.deps import require_reader
 from app.database import get_db
 from app.schemas.analysis import (
     AgentRequest,
@@ -22,7 +23,11 @@ from app.schemas.analysis import (
     RiskResponse,
 )
 
-router = APIRouter(prefix="/analysis", tags=["Analysis (AI)"])
+router = APIRouter(
+    prefix="/analysis",
+    tags=["Analysis (AI)"],
+    dependencies=[Depends(require_reader)],  # all analysis endpoints require at least reader role
+)
 
 
 # ── 1. Natural-language asset query ──────────────────────────────────────────

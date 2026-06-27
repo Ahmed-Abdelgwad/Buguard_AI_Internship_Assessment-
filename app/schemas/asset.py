@@ -46,7 +46,8 @@ class AssetOut(BaseModel):
     last_seen: datetime
     source: str
     tags: list[str]
-    metadata: dict[str, Any] = Field(alias="metadata_")
+    # validation_alias maps from ORM's `metadata_`; serialization uses field name `metadata`
+    metadata: dict[str, Any] = Field(validation_alias="metadata_")
 
 
 class AssetListParams(BaseModel):
@@ -92,3 +93,13 @@ class BulkImportResult(BaseModel):
     updated: int
     failed: int
     failures: list[ImportFailure] = Field(default_factory=list)
+
+
+class LifecycleRefreshResult(BaseModel):
+    certificates_scanned: int
+    expired: int
+    expiring_soon: int
+    renewed: int
+    valid: int
+    no_expiry_data: int
+    scanned_at: datetime

@@ -7,8 +7,9 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql://postgres:postgres@localhost:5432/darkatlas"
 
-    # Auth
-    api_key: str = "changeme"
+    # Auth — two roles: admin (full access) and reader (read-only + AI analysis)
+    api_key: str = "changeme"          # admin key (backward-compatible)
+    reader_api_key: str = "readonly"   # reader key
 
     # Anthropic / LangChain
     anthropic_api_key: str = ""

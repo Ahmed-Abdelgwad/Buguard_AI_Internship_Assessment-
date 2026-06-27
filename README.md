@@ -101,6 +101,7 @@ ReDoc: **[http://localhost:8000/redoc](http://localhost:8000/redoc)**
 |---|---|---|---|
 | `GET` | `/assets` | — | List assets with filter/sort/pagination |
 | `POST` | `/assets/import` | ✓ | Bulk import (idempotent) |
+| `POST` | `/assets/lifecycle/refresh` | ✓ | Manually trigger certificate lifecycle scan |
 
 **Filtering parameters** (`GET /assets`):
 - `type` — `domain | subdomain | ip_address | service | certificate | technology`
@@ -302,6 +303,16 @@ POST /api/v1/analysis/agent
 ### Authentication
 - API key (`X-API-Key` header) is required on all write/mutating operations. Read endpoints are unauthenticated.
 - Key is loaded from the `API_KEY` environment variable — never hardcoded.
+
+### Certificate lifecycle
+
+- A background scheduler runs at startup and every 24 hours (`app/services/lifecycle_service.py`).
+- It scans all `certificate` assets and updates their `status` and `tags` based on `metadata.expires` (also accepts `metadata.expiry` and `metadata.not_after`):
+  - `expires < now` → `status=stale`, tag `expired` added
+  - `now ≤ expires < now+30d` → tag `expiring-soon` added
+  - `expires ≥ now+30d` (or cert was renewed) → lifecycle tags cleared, `status` reactivated if stale was caused by expiry
+- The `expired` tag acts as a sentinel: we only reactivate a `stale` cert if we were the ones who staled it (i.e., the tag is present), preventing accidental reactivation of assets staled for other reasons.
+- A manual trigger is available at `POST /api/v1/assets/lifecycle/refresh` (requires API key).
 
 ### Multi-tenant isolation
 
